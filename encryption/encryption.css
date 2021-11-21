@@ -1,0 +1,132 @@
+.title{
+    text-align: center;
+    background-color: #1ce1d9;
+    width: 100vw;
+    position:absolute;
+}
+h1{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 9vh;
+    color: whitesmoke;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    text-shadow: #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px,
+             #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px;        
+}
+#notice{
+    background-color: rgb(9 247 84);
+    color: #0047ff;
+    padding-left: 1vw;
+    position:relative;
+    top: 21vh;
+    width: 100vw;
+}
+textarea{
+    position: relative;
+    top: -20vh;
+    width: 48%;
+    border: 4px solid black;
+    height: 500px;
+    background-color: rgb(248, 245, 245);
+    padding-left: 2%;
+    padding-top: 2%;
+}
+@media screen and (max-width: 1200px){
+    textarea {
+        position: static;
+        margin-top: 5vh;
+        width: 96%;
+        height: 50vh;
+    }
+}
+#output{
+    margin-top: 25vh;
+    cursor: text;
+}
+#choice{
+    top: 20vh;
+    background-color: #f7bd1e;
+    padding-left: 2vw;
+    border: 4px solid ;
+    padding-top: 4px;
+    width: 96.4%;
+    margin-bottom: 40px;
+    position:relative;
+    top:-20vh;
+}
+@media screen and (max-width: 1200px){
+    #choice{
+        position: relative;
+        top: -75vh;
+    }
+}
+
+.key{
+    display: none;
+    float: right;
+    padding-right: 2px;
+}
+@media screen and (max-width: 11in){
+    .key{
+        position: relative;
+        top: 2vh;
+        left: 3px;
+        background-color: #f7bd1e;
+        padding-left: 2vw;
+        border: 4px solid ;
+        padding-top: 4px;
+        width: 103%;
+    }
+}
+a{
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color:#ff1515;
+    font-weight: 400;
+}
+a:hover{
+    color:rgb(171, 9, 247);
+    text-decoration: none;
+}
+::placeholder{
+    padding: 10%;
+    font-family:monospace;
+    font-size: 120%;
+}
+#subkey{
+    background-color:#a2fd03;
+    font-family:fantasy;
+}
+#subkey:hover{
+    background-color:#26891d;
+    color:white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+#random{
+    background-color:#215ffd;
+    color: white;
+    text-shadow: #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px,
+             #000 0px 0px 1px,   #000 0px 0px 1px,   #000 0px 0px 1px;        
+    font-family:monospace
+}
+#random:hover{
+    background:linear-gradient(to left,
+                                violet,
+                                indigo,
+                                blue,
+                                green,
+                                yellow,
+                                orange,
+                                red);
+   color: #c3b917;
+}
+.info{
+    margin-top:25vh;
+}
+#caesarinfo, #subsinfo{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    display: none;
+    position: sticky;
+}
+image{
+    size: 500%;
+}
