@@ -62,9 +62,43 @@ function move() {
     counter += 1;
         //console.log(move_list[value])
     if (capture == 1) capture = 0;
-}
+    calculate();
+    console.log(Object.entries(white));
+    console.log(Object.entries(black));
 
+}
 function isvalid(e, s) {
+    let piece = document.getElementById(selector);
+        pieceid = piece.id;
+        //console.log(pieceid)
+
+    if(piece.name == "pawn") {
+        if(isvalid_pawn(e, s)) return true;
+        else return false;
+    }
+    else if (piece.name == "knight" || piece.name == "king") {
+        if (piece.className == 'iconw') {
+            for (val of white[pieceid]) {
+                if (val == e.id) return true;
+            }
+            return false;
+        }
+        else if (piece.className == 'iconb') {
+            for (val of black[pieceid]) {
+                //console.log(val);
+                //console.log(e.id)
+                if (val == e.id) return true;
+            }
+            return false;
+        }
+    }
+    else {
+        if (isvalid_pieces(e)) return true;
+        else return false;
+    }
+
+}
+function isvalid_pawn(e, s) {
     let square = document.getElementById(selector).parentNode;
         division1 = parseInt(square.parentNode.id);
         division2 = parseInt(e.parentNode.id);
@@ -89,6 +123,83 @@ function isvalid(e, s) {
     else return false;
 }
 
+function isvalid_pieces(e) {
+    let piece = document.getElementById(selector);
+        pieceid = piece.id;
+
+    if (piece.className == 'iconw') {
+        for (val of white[pieceid]) {
+            if (val == parseInt(e.id)) var count = 1;
+        }
+        if(count != 1) return false;
+    }
+    else if (piece.className == 'iconb') {
+        for (val of black[pieceid]) {
+            if (val == parseInt(e.id)) var count = 1;
+        }
+        if(count != 1) return false;
+    }
+    let factor;
+    let mult;
+        init = parseInt(piece.parentNode.id);
+        final = parseInt(e.id);
+        difference = final - init;
+        arr = [];
+    if (difference < 0) mult = -1;
+    else mult = 1;
+
+    if(piece.name == "rook") arr = [1, 8];
+    else if (piece.name == "bishop") arr = [7, 9];
+    else if (piece.name == "queen") arr = [1, 7, 8, 9];
+
+    for (item of arr) {
+        item *= mult;
+        if(difference == item) factor = item;
+
+        else{
+            //console.log(item);
+            let next = final - item;
+
+            if (piece.className == 'iconw') {
+                for (val of white[pieceid]) {
+                    if (val == next) factor = item;
+                }
+            }
+            else if (piece.className == 'iconb') {
+                for (val of black[pieceid]) {
+                    if (val == next) factor = item;
+                }
+            }
+        }
+    }
+
+    if (check_jump(factor, final - factor, init) == true) return true;
+    else return false;
+    
+}
+function check_jump(factor, final, init) {
+    if(init == final) return true;
+
+    if (document.getElementById(final.toString()).children.length) return false;
+    else if (check_jump(factor, final - factor, init)) return;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function calculate() {
     var pawns = document.getElementsByName("pawn");
         rooks = document.getElementsByName("rook");
@@ -100,22 +211,20 @@ function calculate() {
     for (j of pawns) pawn_moves(j);
     for (j of rooks) rook(j);
     for (j of bishops) bishop(j);
-    //for (j of pawns) probable_moves(j);
-    //for (j of pawns) probable_moves(j);
-    //for (j of pawns) probable_moves(j);
+    for (j of knights) knight(j);
+    for (j of queens) queen(j);
+    for (j of kings) king(j);
 }
-
 function pawn_moves(e) {
     let mult;
         division = parseInt(e.parentNode.parentNode.id);
         square = parseInt(e.parentNode.id);
-        pawnid = e.id;
+        pieceid= e.id;
         move_white = [];
         move_black = [];
         values = [];
-    //console.log(e.parentNode)
 
-    if (j.className == 'iconw') mult = 1;
+    if (e.className == 'iconw') mult = 1;
     else mult = -1;
 
     if (division == 102 || division == 107) {
@@ -125,29 +234,27 @@ function pawn_moves(e) {
     else values.push(8 * mult);
     values.push(7 * mult);
     values.push(9 * mult);
-    //console.log(values);
+
     for (value of values) {
-            //console.log(square);
             let z = square + value;
             if ((value % 7 == 0 || value % 9 == 0) && (document.getElementById(z).parentNode.id == division + mult))
             {
-                if (j.className == 'iconw') move_white.push(z);
+                if (e.className == 'iconw') move_white.push(z);
                 else move_black.push(z);
             }
             else if (value % 8 == 0) {
-                if (j.className == 'iconw') move_white.push(z);
+                if (e.className == 'iconw') move_white.push(z);
                 else move_black.push(z);
             }
-            //console.log(square + value)
-    }
-    if (j.className == 'iconw') white[pawnid] = move_white;
-    else black[pawnid] = move_black;
-}
 
+    }
+    if (e.className == 'iconw') white[pieceid] = move_white;
+    else black[pieceid] = move_black;
+}
 function rook(e) {
     let division = e.parentNode.parentNode;
         square = parseInt(e.parentNode.id);
-        pawnid = e.id;
+        pieceid= e.id;
         move_white = [];
         move_black = [];
         values = division.children;
@@ -155,67 +262,161 @@ function rook(e) {
     for (value of values) {
         let z = parseInt(value.id);
         if (z == square) continue;
-        if (j.className == 'iconw') move_white.push(z);
-            else move_black.push(z);
+        if (e.className == 'iconw') move_white.push(z);
+        else move_black.push(z);
     }
     let mult = 1;
-    let z = 1;
-    while (z < 57) {
-        z = square + (8 * mult);
+        next = 8;
+    while (true) {
+        let z = square + (next * mult);
+
+        if(z > 64) {
+            next = -8;
+            continue;
+        }
+        else if(z < 1) break;
+
+        if (e.className == 'iconw') move_white.push(z);
+        else move_black.push(z);
+
         mult += 1;
-        if (j.className == 'iconw') move_white.push(z);
-            else move_black.push(z);
-    }
-    let n = 1;
-    while (z > 8) {
-        z = square - (8 * n);
-        n += 1;
-        if (j.className == 'iconw') move_white.push(z);
-            else move_black.push(z);
-    }
-    for (i in move_black) {
-        if (move_black[i] > 64 || move_black[i] < 1) move_black.splice(i, 1);
-    }
-    for (i in move_white) {
-        if (move_white[i] > 64 || move_white[i] < 1) move_white.splice(i, 1);
     }
 
-    if (j.className == 'iconw') white[pawnid] = move_white;
-    else black[pawnid] = move_black;
+    if (e.className == 'iconw') white[pieceid] = move_white;
+    else black[pieceid] = move_black;
 
 }
-function bishop() {
-    let division = e.parentNode.parentNode.id;
+function bishop(e) {
+    let div1 = parseInt(e.parentNode.parentNode.id);
+    let div2;
         square = parseInt(e.parentNode.id);
-        pawnid = e.id;
+        pieceid = e.id;
         move_white = [];
         move_black = [];
         mult = 1;
-        z = 1;
-    while (z < 57) {
-        z = square + (7 * mult);
+        next = 7;
+
+    while (true) {
+        let z = square + (next * mult);
+        
+        if(z > 64) {
+            mult = 1;
+            if(next == 7) {
+                next = 9;
+                continue;
+            }
+            else {
+                next = -7;
+                continue;
+            }
+        }
+        else if(z < 1) {
+            mult = 1;
+            if(next == -7) {
+                next = -9;
+                continue;
+            }
+            else break;
+        }
+        
+        div2 = parseInt(document.getElementById(z.toString()).parentNode.id);
+
+        if (Math.abs(div2 - div1) == mult) {
+            //console.log(z);
+            if (e.className == 'iconw') move_white.push(z);
+            else move_black.push(z);
+        }
+
         mult += 1;
-        if (j.className == 'iconw') move_white.push(z);
+    }
+    if (e.className == 'iconw') white[pieceid] = move_white;
+    else black[pieceid] = move_black;
+}
+function knight(e) {
+    let square = parseInt(e.parentNode.id);
+    let col2;
+        col1 = square % 8;
+        pieceid = e.id;
+        move_white = [];
+        move_black = [];
+        next = 17;
+
+    if (col1 == 0) col1 = 8;
+
+    while (true) {
+        z = square + next;
+
+        col2 = z % 8;
+        if (col2 == 0) col2 = 8;
+
+        if ((Math.abs(col2 - col1) == 1 || Math.abs(col2 - col1) == 2) && z < 65 && z > 0) {
+            //console.log(z);
+            if (e.className == 'iconw') move_white.push(z);
             else move_black.push(z);
+        }
+
+        if(next == 17) next = -17;
+        else if(next == -17) next = 15;
+        else if(next == 15) next = -15;
+        else if(next == -15) next = 6;
+        else if(next == 6) next = -6;
+        else if(next == -6) next = 10;
+        else if(next == 10) next = -10;
+        else break;
     }
-    let n = 1;
-    while (z > 8) {
-        z = square - (8 * n);
-        n += 1;
-        var div2 = parseInt(document.getElementById(z).parentNode.id);
+    if (e.className == 'iconw') white[pieceid] = move_white;
+    else black[pieceid] = move_black;
+}
+function queen(e) {
+    let pieceid = e.id;
+    move_white = [];
+    move_black = [];
+    rook(e);
+    let w1 = white[pieceid];
+    let b1 = black[pieceid];
+    bishop(e);
+    let w2 = white[pieceid];
+    let b2 = black[pieceid];
 
+    if (e.className == 'iconw') move_white = w1.concat(w2);
+    else move_black = b1.concat(b2); 
+    //console.log(move_black);
+    //console.log(move_white);
+    if (e.className == 'iconw') white[pieceid] = move_white;
+    else black[pieceid] = move_black;
+}
+function king(e) {
+    let square = parseInt(e.parentNode.id);
+    let col2;
+        col1 = square % 8;
+        pieceid = e.id;
+        move_white = [];
+        move_black = [];
+        next = 8;
 
+    if (col1 == 0) col1 = 8;
 
-        if (j.className == 'iconw') move_white.push(z);
+    while (true) {
+        z = square + next;
+
+        col2 = z % 8;
+        if (col2 == 0) col2 = 8;
+
+        if (Math.abs(col2 - col1) < 2 && z < 65 && z > 0) {
+            //console.log(z);
+            if (e.className == 'iconw') move_white.push(z);
             else move_black.push(z);
+        }
+
+        if(next == 8) next = -8;
+        else if(next == -8) next = 7;
+        else if(next == 7) next = -7;
+        else if(next == -7) next = 1;
+        else if(next == 1) next = -1;
+        else if(next == -1) next = 9;
+        else if(next == 9) next = -9;
+        else break;
     }
-    for (i in move_black) {
-        if (move_black[i] > 64 || move_black[i] < 1) move_black.splice(i, 1);
-    }
-    for (i in move_white) {
-        if (move_white[i] > 64 || move_white[i] < 1) move_white.splice(i, 1);
-    }
-    
-    if (j.className == 'iconw') white[pawnid] = move_white;
-    else black[pawnid] = move_black;
+    if (e.className == 'iconw') white[pieceid] = move_white;
+    else black[pieceid] = move_black;
 }
