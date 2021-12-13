@@ -1,29 +1,56 @@
 var selector = "";
-const pieces = document.querySelectorAll('img');
 const squares = document.querySelectorAll('p');
+const notice = document.querySelector('.notice');
+const warn = document.querySelector('#check');
 var counter = 0;
+var pre1_sq;
+var pre1_img;
+var pre2_sq;
+var pre2_img;
+var undo_count = 0;
+var attackers = [];
+var attfactor;
+var attsquare;
 white = {};
 black = {};
 let capture;
+var materun = 0;
+var checkrun = 0;
+var before = 0;
+var prompiece;
+var pawnimg;
+var pawnsq;
+
 
 let i = 1;
 for (let square of squares) {
     square.id = i.toString();
     i++;
 }
-
+click();
 calculate();
 console.log(Object.entries(white));
 console.log(Object.entries(black));
 
-for (let pawn of pieces) {
-    pawn.onclick = select;
+let choices = document.querySelectorAll('.promc');
+for(each of choices) {
+    each.addEventListener('click', function() {
+        prompiece = this;
+        promote();
+        });
 }
 
 for (let square of squares) {
     square.onclick = move;
+    //console.log(this);
 }
-
+function click() {
+    var pieces = document.querySelectorAll('img');
+    for (let pawn of pieces) {
+        pawn.onclick = select;
+        //console.log(this);
+    }
+}
 function select() {
     if (selector != "") {
         let x = document.getElementById(selector).className;
@@ -34,9 +61,17 @@ function select() {
         else {
             if (isvalid(this.parentNode, "capture")) {
                     let ini_img = document.getElementById(this.id);
+                    pre2_img = ini_img;
                     ini_img.remove(ini_img);
                     capture = 1;
-                    return;
+                    console.log(this);
+                    if(checkrun == 0 && materun == 0) {
+                        if (this.className == 'iconw') {
+                            delete white[this.id];
+                        }
+                        else delete black[this.id];
+                        return;
+                    }
             }
         }
     }
@@ -46,31 +81,88 @@ function select() {
         document.getElementById(selector).style.backgroundColor = "rgba(75, 137, 78, 0.5)";
     }
 }
+function move(e) {
+    //console.log(e.id)
+    //console.log(this.id);
+    if (!e.id) {
+        e = this;
+        //console.log(e);
+    }
+    //console.log(e.altKey);
+    //console.log(this);
+    if (selector == '') return false;
 
-function move() {
-    if (selector == '' || this.children.length) return;
+    if (!isvalid(e, "move")) return false;
+
+    if (e.children.length) {
+        if (materun == 0) return false;
+
+        if (e.children[0].className[4] === selector[1]) return false;
+    }
     //get_moves()
-    //isvalid(this)
-    if (!isvalid(this, "move")) return;
-    //console.log(this.id)
-
+    //isvalid(e)
+    
+    
+   // console.log(e.id)
+    //console.log(e)
+   // console.log(selector)
     let img = document.getElementById(selector);
-    this.appendChild(img);
+    pre1_sq = img.parentNode;
+    e.appendChild(img);
     
     document.getElementById(selector).style.backgroundColor = "transparent";
-    selector = '';
-    counter += 1;
-        //console.log(move_list[value])
+    pre1_img = img;
+    pre2_sq = e;
+   // console.log(pre1_sq);
+   // console.log(pre1_img);
+   // console.log(pre2_sq);
+    if (materun == 0) selector = '';
+    
+        //console.log(e);
     if (capture == 1) capture = 0;
+    if (materun == 0) {
+        if (promotion()) {
+            return;
+        }
+    }
+    if (aftermoves()) return true;
+    return false;
+}
+function aftermoves() {
+    click();
     calculate();
-    console.log(Object.entries(white));
-    console.log(Object.entries(black));
-
+    notice.style.display = "none";
+    
+    if (ischeck('before')) {
+        undo();
+        notice.style.display = "block";
+        pre1_img,pre2_img = null;
+        return false;
+    }
+    else {
+        if (materun == 1) {
+            undo();
+            pre1_img,pre2_img = null;
+            return true;
+        }
+        if (ischeck('after')) {
+            counter += 1;
+            if (checkmate()) document.body.style.pointerEvents = "none";
+        }
+        else counter += 1;
+        
+    }
+    pre1_img,pre2_img = null;
+    attackers = [];
+    attfactor = 0;
+    //console.log(counter)
+    return true;
 }
 function isvalid(e, s) {
     let piece = document.getElementById(selector);
         pieceid = piece.id;
         //console.log(pieceid)
+        //console.log(selector);
 
     if(piece.name == "pawn") {
         if(isvalid_pawn(e, s)) return true;
@@ -110,9 +202,27 @@ function isvalid_pawn(e, s) {
     if (counter % 2 == 0) value = 1;
     else value = -1;
 
+    if (before == 1) {
+        if (counter % 2 == 0) value = -1;
+        else value = 1;
+    }
+
     if (s == "capture") {
-        if ((z == 7 * value || z == 9 * value) && division2 - division1 == value) return true;
-        else return false;
+        if (division2 - division1 == value) {
+            if (z == 7 * value) {
+                if (materun == 0 && checkrun == 1) {
+                    attfactor = 7 * value;
+                }
+                return true;
+            }
+            if (z == 9 * value) {
+                if (materun == 0 && checkrun == 1) {
+                    attfactor = 9 * value;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     if (division1 == 102 || division1 == 107) {
@@ -122,7 +232,6 @@ function isvalid_pawn(e, s) {
     else if ((z == 7 * value || z == 9 * value) && division2 - division1 == value && capture == 1) return true;
     else return false;
 }
-
 function isvalid_pieces(e) {
     let piece = document.getElementById(selector);
         pieceid = piece.id;
@@ -154,11 +263,22 @@ function isvalid_pieces(e) {
 
     for (item of arr) {
         item *= mult;
-        if(difference == item) factor = item;
+        if(difference == item) {
+            factor = item;
+            break;
+        }
 
         else{
             //console.log(item);
             let next = final - item;
+
+            if (Math.abs(item) == 7 || Math.abs(item) == 9) {
+                let div1 = document.getElementById(init.toString()).parentNode;
+                    div2 = document.getElementById(final.toString()).parentNode;
+                
+                if (div2 == div1) continue;
+                else if (init % 8 == final % 8) continue;
+            }
 
             if (piece.className == 'iconw') {
                 for (val of white[pieceid]) {
@@ -172,6 +292,9 @@ function isvalid_pieces(e) {
             }
         }
     }
+    if (materun == 0 && checkrun == 1) {
+        attfactor = factor;
+    }
 
     if (check_jump(factor, final - factor, init) == true) return true;
     else return false;
@@ -181,25 +304,9 @@ function check_jump(factor, final, init) {
     if(init == final) return true;
 
     if (document.getElementById(final.toString()).children.length) return false;
-    else if (check_jump(factor, final - factor, init)) return;
-    
+    else if (check_jump(factor, final - factor, init)) return true;
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function calculate() {
     var pawns = document.getElementsByName("pawn");
         rooks = document.getElementsByName("rook");
@@ -227,22 +334,14 @@ function pawn_moves(e) {
     if (e.className == 'iconw') mult = 1;
     else mult = -1;
 
-    if (division == 102 || division == 107) {
-        values.push(8 * mult);
-        values.push(16 * mult);
-    }
-    else values.push(8 * mult);
     values.push(7 * mult);
     values.push(9 * mult);
 
     for (value of values) {
             let z = square + value;
+            if (z > 64 || z < 1) continue;
             if ((value % 7 == 0 || value % 9 == 0) && (document.getElementById(z).parentNode.id == division + mult))
             {
-                if (e.className == 'iconw') move_white.push(z);
-                else move_black.push(z);
-            }
-            else if (value % 8 == 0) {
                 if (e.className == 'iconw') move_white.push(z);
                 else move_black.push(z);
             }
@@ -272,9 +371,10 @@ function rook(e) {
 
         if(z > 64) {
             next = -8;
+            mult = 1;
             continue;
         }
-        else if(z < 1) break;
+        if(z < 1) break;
 
         if (e.className == 'iconw') move_white.push(z);
         else move_black.push(z);
@@ -420,3 +520,194 @@ function king(e) {
     if (e.className == 'iconw') white[pieceid] = move_white;
     else black[pieceid] = move_black;
 }
+function ischeck(time, sq, arr) {
+    checkrun = 1;
+    var piece_arr;
+    var king_sq;
+    if (time == 'before') {
+        if (counter % 2 == 0) {
+            king_sq = document.getElementById('kw').parentNode.id;
+            piece_arr = black;
+        }
+        else {
+            king_sq = document.getElementById('kb').parentNode.id;
+            piece_arr = white;
+        }
+        before = 1;
+    }
+    else if (time == 'after') {
+        if (counter % 2 == 0) {
+            king_sq = document.getElementById('kb').parentNode.id;
+            piece_arr = white;
+        }
+        else {
+            king_sq = document.getElementById('kw').parentNode.id;
+            piece_arr = black;
+        }
+    }
+    else {
+        king_sq = sq;
+        piece_arr = arr;
+    }
+
+    //king_sq = parseInt(king_sq);
+    //console.log(king_sq);
+    //console.log(piece_arr);
+
+    for (values of Object.entries(piece_arr)) {
+        for (val of values[1]) {
+            if (val == king_sq) {
+                //console.log('yes');
+                //console.log(values[0]);
+                selector = values[0];
+                
+                
+                if (isvalid(document.getElementById(king_sq), "capture")) {
+                    console.log("check")
+                    selector = '';
+                    if (time == 'after') {
+                        attackers.push(values[0]);
+                        attsquare = parseInt(document.getElementById(values[0]).parentNode.id);
+                    }
+                    else {
+                        checkrun = 0;
+                        before = 0;
+                        return true;
+                    }
+
+                }
+                else {
+                    selector = '';
+                }
+            }
+        
+        }
+    }
+    checkrun = 0;
+    before = 0;
+    if (attackers.length > 0 && time != "none" && materun == 0) return true;
+    return false;
+}
+function undo() {
+    pre1_sq.appendChild(pre1_img);
+    if (pre2_img != null && materun == 0) {
+        pre2_sq.appendChild(pre2_img);
+    }
+    undo_count += 1;
+    calculate();
+}
+function checkmate() {
+    materun = 1;
+    var king_sq;
+    var king_arr;
+    let temp;
+    if (counter % 2 == 1) {
+        king_sq = document.getElementById('kb').parentNode.id;
+        king_arr = black['kb'];
+        temp = 'kb';
+    }
+    else {
+        king_sq = document.getElementById('kw').parentNode.id;
+        king_arr = white['kw'];
+        temp ='kw';
+    }
+
+    for (val of king_arr) {
+        selector = temp;
+        let sq = document.getElementById(val);
+        let init = undo_count;
+        if (move(sq)) {
+            materun = 0;
+            return false;
+        }
+    }
+    console.log(attfactor)
+    console.log(attackers)
+    if (attackers.length != 1) {
+        materun = 0;
+        return true;
+    }
+    var danger = [];
+
+    if (attackers[0][0] == 'n') {
+        let nsq = document.getElementById(attackers[0]).parentNode.id;
+        danger.push(parseInt(nsq))
+    }
+    else {
+        let i = 0;
+        while (true) {
+            let insert = attsquare + (attfactor * i);
+            if (insert == king_sq) {
+                break;
+            }
+            danger.push(insert);
+            i++;
+        }
+    }
+    for (val of danger) {
+        let arr;
+        if (attackers[0][1] == 'w') {
+            arr = {...black};
+            delete arr['kb'];
+        }
+        else { 
+        arr = {...white};
+        delete arr['kw'];
+        }
+        
+        
+        if (ischeck("none", val, arr)) {
+            materun = 0;
+            return false;
+        }
+    }
+    console.log(attfactor)
+    console.log(attackers)
+    console.log(attsquare)
+    console.log(danger)
+    materun = 0;
+    return true;
+}
+function promotion() {
+    var divisions = document.getElementsByClassName('start');
+    
+    for (div of divisions) {
+        for (sq of div.children) {
+            for (img of sq.children) {
+                if (img.name == "pawn") {
+                    document.getElementsByClassName('promotion')[0].style.display = 'block';
+
+                    if (div.id == '101') {
+                        let pieces = document.getElementsByClassName('choice');
+                        for (each of pieces) {
+                            each.children[0].style.filter = 'invert(1)';
+                        }
+                    }
+                    pawnimg = img;
+                    pawnsq = sq;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+function promote() {
+    let oldid = prompiece.id + img.className[4] + 1;
+    let piececount = 1;
+    for (items of document.getElementsByName(prompiece.title.toLowerCase())) {
+        if (items.className[4] == oldid[1]) {
+            piececount += 1;
+        }
+    }
+    let newid = oldid.slice(0, 2) + piececount;
+    let newimg = document.getElementById(oldid).cloneNode();
+    newimg.id = newid;
+    pawnimg.remove(pawnimg);
+    pawnsq.appendChild(newimg);
+    document.getElementsByClassName('promotion')[0].style.display = 'none';
+    aftermoves();
+}
+
+
+

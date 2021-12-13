@@ -12,12 +12,22 @@
         <title>Chess</title>
     </head>
     <body>
+        <div class="notice"><h2>Protect your king!</h2></div>
+        <div class="mate"><h1>CHECKMATE!</h1></div>
+        <div class="promotion">
+            <span class="choices">Promote to:</span>
+            <span class="choice"><img id="r" title="Rook" class="promc" src="icons/rookw.png"></span>
+            <span class="choice"><img id="n" title="Knight" class="promc" src="icons/knightw.png"></span>
+            <span class="choice"><img id="b" title="Bishop" class="promc" src="icons/bishw.png"></span>
+            <span class="choice"><img id="q" title="Queen" class="promc" src="icons/queenw.png"></span>
+        </div>
+        
         <div id="board">
-            <div id="101">
+            <div id="101" class="start">
                 <p class="white"><img class="iconw" id="rw1" name="rook" src="icons/rookw.png"></p>
                 <p class="black"><img class="iconw" id="nw1" name="knight" src="icons/knightw.png"></p>
                 <p class="white"><img class="iconw" id="bw1" name="bishop" src="icons/bishw.png"></p>
-                <p class="black"><img class="iconw" id="qw"  name="queen" src="icons/queenw.png"></p>
+                <p class="black"><img class="iconw" id="qw1"  name="queen" src="icons/queenw.png"></p>
                 <p class="white"><img class="iconw" id="kw"  name="king" src="icons/kingw.png"></p>
                 <p class="black"><img class="iconw" id="bw2" name="bishop" src="icons/bishw.png"></p>
                 <p class="white"><img class="iconw" id="nw2" name="knight" src="icons/knightw.png"></p>
@@ -84,11 +94,11 @@
                 <p class="white"><img class="iconb" id="pbg" name="pawn" src="icons/pawnb.png"></p>
                 <p class="black"><img class="iconb" id="pbh" name="pawn" src="icons/pawnb.png"></p>
             </div>
-            <div  id="108">
+            <div  id="108" class="start">
                 <p class="black"><img class="iconb" id="rb1" name="rook" src="icons/rookb.png"></p>
                 <p class="white"><img class="iconb" id="nb1" name="knight" src="icons/knightb.png"></p>
                 <p class="black"><img class="iconb" id="bb1" name="bishop" src="icons/bishb.png"></p>
-                <p class="white"><img class="iconb" id="qb"  name="queen" src="icons/queenb.png"></p>
+                <p class="white"><img class="iconb" id="qb1"  name="queen" src="icons/queenb.png"></p>
                 <p class="black"><img class="iconb" id="kb"  name="king" src="icons/kingb.png"></p>
                 <p class="white"><img class="iconb" id="bb2" name="bishop" src="icons/bishb.png"></p>
                 <p class="black"><img class="iconb" id="nb2" name="knight" src="icons/knightb.png"></p>
