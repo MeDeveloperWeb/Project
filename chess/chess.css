@@ -35,10 +35,9 @@ body{
 }
 @media screen and (max-width: 1000px){
   .white{
-    height: 100px;
-    width: 100px;
-    background-color: #e2c06f;
-}
+      height: 100px;
+      width: 100px;
+  }
 }
 p{
     display: inline-block;
