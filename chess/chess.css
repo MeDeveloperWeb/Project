@@ -6,7 +6,7 @@ body{
     border:10px solid #705c40;
 }
 @media screen and (max-width: 1000px){
-    #board{
+    #body{
         height: 300px;
         width: 300px;
         background-color: transparent;
