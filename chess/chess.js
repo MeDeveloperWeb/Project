@@ -20,10 +20,10 @@ var before = 0;
 var prompiece;
 var pawnimg;
 var pawnsq;
-var castle = { 'rb1' : 3,
-            'rb2' : -2,
-            'rw1' : 3,
-            'rw2' : -2
+var castle = { 'rb1' : 2,
+            'rb2' : -3,
+            'rw1' : 2,
+            'rw2' : -3
 };
 var castle_status = true;
 let i = 1;
@@ -531,16 +531,16 @@ function king(e) {
     let square = parseInt(e.parentNode.id);
     if (castle_status) {
         if (e.className == 'iconw') {
-            if (square != 5) {
+            if (square != 4) {
                 if (castle['rw1']) delete castle['rw1'];
                 if (castle['rw2']) delete castle['rw2'];
             }
         }
         else {
-            if (square != 61) {
+            if (square != 60) {
                 if (castle['rb1']) delete castle['rb1'];
                 if (castle['rb2']) delete castle['rb2'];
-            }
+            } 
         }
         if (Object.keys(castle).length == 0) castle_status = false;
     }
