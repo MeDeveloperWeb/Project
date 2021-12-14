@@ -20,8 +20,12 @@ var before = 0;
 var prompiece;
 var pawnimg;
 var pawnsq;
-
-
+var castle = { 'rb1' : 3,
+            'rb2' : -2,
+            'rw1' : 3,
+            'rw2' : -2
+};
+var castle_status = true;
 let i = 1;
 for (let square of squares) {
     square.id = i.toString();
@@ -92,13 +96,21 @@ function move(e) {
     //console.log(this);
     if (selector == '') return false;
 
-    if (!isvalid(e, "move")) return false;
-
     if (e.children.length) {
         if (materun == 0) return false;
 
         if (e.children[0].className[4] === selector[1]) return false;
     }
+    let img = document.getElementById(selector);
+
+    if (img.name == "king" && castle_status && materun == 0) {
+        if(iscastle(e)) {
+            if (aftermoves()) return true;
+        }
+    }
+
+
+    if (!isvalid(e, "move")) return false;
     //get_moves()
     //isvalid(e)
     
@@ -106,7 +118,7 @@ function move(e) {
    // console.log(e.id)
     //console.log(e)
    // console.log(selector)
-    let img = document.getElementById(selector);
+    
     pre1_sq = img.parentNode;
     e.appendChild(img);
     
@@ -116,7 +128,7 @@ function move(e) {
    // console.log(pre1_sq);
    // console.log(pre1_img);
    // console.log(pre2_sq);
-    if (materun == 0) selector = '';
+    
     
         //console.log(e);
     if (capture == 1) capture = 0;
@@ -129,6 +141,7 @@ function move(e) {
     return false;
 }
 function aftermoves() {
+    if (materun == 0) selector = '';
     click();
     calculate();
     notice.style.display = "none";
@@ -308,7 +321,7 @@ function check_jump(factor, final, init) {
 
 }
 function calculate() {
-    var pawns = document.getElementsByName("pawn");
+    let pawns = document.getElementsByName("pawn");
         rooks = document.getElementsByName("rook");
         knights = document.getElementsByName("knight");
         bishops = document.getElementsByName("bishop");
@@ -317,10 +330,11 @@ function calculate() {
 
     for (j of pawns) pawn_moves(j);
     for (j of rooks) rook(j);
+    for (j of kings) king(j);
     for (j of bishops) bishop(j);
     for (j of knights) knight(j);
     for (j of queens) queen(j);
-    for (j of kings) king(j);
+    
 }
 function pawn_moves(e) {
     let mult;
@@ -357,6 +371,34 @@ function rook(e) {
         move_white = [];
         move_black = [];
         values = division.children;
+
+    
+    if (castle_status) {
+        if (e.className == 'iconw') {
+            if (e.id == 'rw1') {
+                if (square != 1) {
+                    if (castle['rw1']) delete castle['rw1'];
+                }
+            }
+            else if (e.id == 'rw2') {
+                    if (square != 8) {
+                        if (castle['rw2']) delete castle['rw2'];
+                    }
+            }
+        }
+        else {
+            if (e.id == 'rb1') {
+                if (square != 57) {
+                    if (castle['rb1']) delete castle['rb1'];
+                }
+            }
+            else if (e.id == 'rb2') {
+                    if (square != 64) {
+                        if (castle['rb2']) delete castle['rb2'];
+                    }
+            }
+        }
+    }
 
     for (value of values) {
         let z = parseInt(value.id);
@@ -487,6 +529,21 @@ function queen(e) {
 }
 function king(e) {
     let square = parseInt(e.parentNode.id);
+    if (castle_status) {
+        if (e.className == 'iconw') {
+            if (square != 5) {
+                if (castle['rw1']) delete castle['rw1'];
+                if (castle['rw2']) delete castle['rw2'];
+            }
+        }
+        else {
+            if (square != 61) {
+                if (castle['rb1']) delete castle['rb1'];
+                if (castle['rb2']) delete castle['rb2'];
+            }
+        }
+        if (Object.keys(castle).length == 0) castle_status = false;
+    }
     let col2;
         col1 = square % 8;
         pieceid = e.id;
@@ -522,8 +579,8 @@ function king(e) {
 }
 function ischeck(time, sq, arr) {
     checkrun = 1;
-    var piece_arr;
-    var king_sq;
+    let piece_arr;
+    let king_sq;
     if (time == 'before') {
         if (counter % 2 == 0) {
             king_sq = document.getElementById('kw').parentNode.id;
@@ -598,8 +655,8 @@ function undo() {
 }
 function checkmate() {
     materun = 1;
-    var king_sq;
-    var king_arr;
+    let king_sq;
+    let king_arr;
     let temp;
     if (counter % 2 == 1) {
         king_sq = document.getElementById('kb').parentNode.id;
@@ -627,7 +684,7 @@ function checkmate() {
         materun = 0;
         return true;
     }
-    var danger = [];
+    let danger = [];
 
     if (attackers[0][0] == 'n') {
         let nsq = document.getElementById(attackers[0]).parentNode.id;
@@ -669,7 +726,7 @@ function checkmate() {
     return true;
 }
 function promotion() {
-    var divisions = document.getElementsByClassName('start');
+    let divisions = document.getElementsByClassName('start');
     
     for (div of divisions) {
         for (sq of div.children) {
@@ -707,6 +764,39 @@ function promote() {
     pawnsq.appendChild(newimg);
     document.getElementsByClassName('promotion')[0].style.display = 'none';
     aftermoves();
+}
+function iscastle(e) {
+    let king_sq = parseInt(document.getElementById(selector).parentNode.id);
+    let move_sq = parseInt(e.id);
+    let diff = move_sq - king_sq;
+    let rook_num;
+    if (Math.abs(diff) != 2) return false;
+    if (diff > 0) rook_num = 2;
+    else rook_num = 1;
+
+    let rook_id = 'r' + selector[1] + rook_num;
+
+    if (!castle[rook_id]) return false;
+
+    let arr;
+    
+    if (selector[1] == 'w') arr = black;
+    else arr = white;
+
+    for (let k = king_sq + (diff / 2); k <= king_sq + diff; k *= 2) {
+        if (ischeck('none', k, arr)) return false;
+        if (document.getElementById(k.toString()).children.length) return false;
+    }
+    let rook_img = document.getElementById(rook_id);
+    let king_img = document.getElementById(selector);
+
+    let rook_sq = parseInt(rook_img.parentNode.id);
+
+    let new_sq = rook_sq + castle[rook_id];
+
+    e.appendChild(king_img);
+    document.getElementById(new_sq).appendChild(rook_img);
+    return true;
 }
 
 
