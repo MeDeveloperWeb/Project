@@ -22,10 +22,23 @@ body{
     width: 100px;
     background-color: #b88a4b;
 }
+@media screen and (max-width: 1000px){
+    .black{
+      height: 50px;
+      width: 50px;
+    }
+}
 .white{
     height: 100px;
     width: 100px;
     background-color: #e2c06f;
+}
+@media screen and (max-width: 1000px){
+  .white{
+    height: 100px;
+    width: 100px;
+    background-color: #e2c06f;
+}
 }
 p{
     display: inline-block;
