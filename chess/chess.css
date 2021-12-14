@@ -35,8 +35,8 @@ body{
 }
 @media screen and (max-width: 1000px){
   .white{
-      height: 100px;
-      width: 100px;
+      height: 50px;
+      width: 50px;
   }
 }
 p{
