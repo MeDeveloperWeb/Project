@@ -59,6 +59,12 @@ img{
     height: 98%;
     width: 100%;
 }
+@media screen and (max-width: 1000px){
+  img{
+    height: 95%;
+    width: 95%;
+  }
+}
 .notice{
     position: fixed;
     top: 40px;
