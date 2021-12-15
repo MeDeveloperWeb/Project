@@ -19,7 +19,7 @@ body{
 }
 @media screen and (max-width: 1000px){
   #board{
-    margin-top: 3.4px;
+    margin-top: 2px;
   }
 }
 .black{
@@ -51,7 +51,7 @@ p{
 }
 @media screen and (max-width: 1000px) {
   p {
-      margin: -2.08px;
+      margin: -2.09px;
       margin-top: -2px;
   }
 }
