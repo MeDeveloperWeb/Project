@@ -1,40 +1,66 @@
-body{
-    height: 800px;
-    width: 800px;
-    background-color: transparent;
-    margin: 100px;
-    border:10px solid #705c40;
+html { 
+  background: url(icons/wood.jpg) no-repeat center center fixed; 
+  background-color: #cc9c6f;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
-@media screen and (max-width: 1000px){
-    #board{
-        height: 300px;
-        width: 300px;
-        background-color: transparent;
+.main{
+    margin: 100px;
+}
+@media screen and (max-width: 1200px){
+    .main{
         margin: 20px;
-        border: 5px solid black;
     }
 }
 #board{
     margin:2px;
+    text-align: center;
 }
+
 .black{
     height: 100px;
     width: 100px;
     background-color: #b88a4b;
+}
+@media screen and (max-width: 1200px){
+    .black{
+        height: 10vw;
+        width: 10vw;
+    }
 }
 .white{
     height: 100px;
     width: 100px;
     background-color: #e2c06f;
 }
+@media screen and (max-width: 1200px){
+    .white{
+        height: 10vw;
+        width: 10vw;
+    }
+}
 p{
     display: inline-block;
     margin: -2px;
     text-align: center;
 }
+@media screen and (max-width: 1200px){
+    p{
+        margin: -2.5px;
+        margin-top: -3.5px;
+    }
+}
 img{
     height: 98%;
     width: 100%;
+}
+@media screen and (max-width: 1200px) {
+    img{
+        height: 95%;
+        width: 95%;
+    }
 }
 .notice{
     position: fixed;
@@ -44,13 +70,21 @@ img{
     display: none;
 }
 .mate {
-    color: red;
+    color: #9f8259;
     position: fixed;
     top: 450px;
     left: 450px;
-    border: 5px solid black;
-    background-color: #a9e33c;
+    border: 5px solid #9a7543;
+    background-color: #ddbb6b;
     display: none;
+    padding-top: 10px;
+    padding-left: 50px;
+    padding-right: 50px;
+    text-align: center;
+    z-index: 1;
+}
+.win{
+  color: #2dd526;
 }
 .promotion{
     position: fixed;
@@ -77,4 +111,33 @@ img{
     text-align: center;
     font-size:40px;
     font-family: monospace;
+}
+@-ms-viewport{
+  width: device-width;
+}
+h1{
+    text-align: center;
+    font-size: 500%;
+    padding: 50px;
+    color: #c47e46;
+}
+@media screen and (max-width: 1200px) {
+  h1{
+      font-size: 10vw;
+  }
+}
+.head{
+  width: 100vw;
+  height: fit-content;
+  background: url(https://images.alphacoders.com/652/652428.jpg);
+  background-size: contain;
+  text-align: center;
+  max-height: 200px;
+  margin: -10px;
+  margin-top: -75px;
+}
+@media screen and (max-width: 700px) {
+  .head{
+    margin-top: -50px;
+  }
 }

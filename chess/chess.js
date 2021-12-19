@@ -26,6 +26,8 @@ var castle = { 'rb1' : 2,
             'rw2' : -3
 };
 var castle_status = true;
+var passant;
+var passant_status = false;
 let i = 1;
 for (let square of squares) {
     square.id = i.toString();
@@ -37,13 +39,13 @@ console.log(Object.entries(white));
 console.log(Object.entries(black));
 
 let choices = document.querySelectorAll('.promc');
+
 for(each of choices) {
     each.addEventListener('click', function() {
         prompiece = this;
         promote();
         });
 }
-
 for (let square of squares) {
     square.onclick = move;
     //console.log(this);
@@ -103,21 +105,15 @@ function move(e) {
     }
     let img = document.getElementById(selector);
 
-    if (img.name == "king" && castle_status && materun == 0) {
-        if(iscastle(e)) {
-            if (aftermoves()) return true;
-        }
+    if (img.name == "king" && castle_status && materun == 0 && iscastle(e)) {
+        if (aftermoves()) return true;
     }
+    else if (img.name == "pawn" && passant_status && materun == 0 && en_passant(e)) {
+        passant.remove(passant);
+        passant_status = false;
 
-
-    if (!isvalid(e, "move")) return false;
-    //get_moves()
-    //isvalid(e)
-    
-    
-   // console.log(e.id)
-    //console.log(e)
-   // console.log(selector)
+    }
+    else if (!isvalid(e, "move")) return false;
     
     pre1_sq = img.parentNode;
     e.appendChild(img);
@@ -134,7 +130,7 @@ function move(e) {
     if (capture == 1) capture = 0;
     if (materun == 0) {
         if (promotion()) {
-            return;
+            return true;
         }
     }
     if (aftermoves()) return true;
@@ -160,7 +156,15 @@ function aftermoves() {
         }
         if (ischeck('after')) {
             counter += 1;
-            if (checkmate()) document.body.style.pointerEvents = "none";
+            if (checkmate()) {
+                document.getElementById('board').style.pointerEvents = "none";
+                let winner = document.getElementById('winner') 
+                console.log(counter);
+                if (counter % 2 == 1) winner.innerHTML = "White";
+                else winner.innerHTML = "Black";
+                document.getElementById('board').style.filter = 'blur(4px)';
+                document.getElementsByClassName('mate')[0].style.display = "block";
+            }
         }
         else counter += 1;
         
@@ -239,7 +243,12 @@ function isvalid_pawn(e, s) {
     }
 
     if (division1 == 102 || division1 == 107) {
-        if (z == value * 8 || z == value * 16) return true;
+        if (z == value * 8) return true;
+        if (z == value * 16) {
+            passant_status = true;
+            passant = document.getElementById(selector);
+            return true;
+        }
     }
     if (z == 8 * value) return true;
     else if ((z == 7 * value || z == 9 * value) && division2 - division1 == value && capture == 1) return true;
@@ -798,6 +807,31 @@ function iscastle(e) {
     document.getElementById(new_sq).appendChild(rook_img);
     return true;
 }
+function en_passant(e) {
+    let value;
+    let div1 = parseInt(passant.parentNode.parentNode.id);
+    let div2 = parseInt(document.getElementById(selector).parentNode.parentNode.id);
+    let div3 = parseInt(e.parentNode.id);
+    
+    if (div1 != div2 || Math.abs(div2 - div3) != 1) return false;
 
+    let sq1 = parseInt(passant.parentNode.id);
+    let sq2 = parseInt(document.getElementById(selector).parentNode.id);
+    let sq3 = parseInt(e.id);
+    
+    let diff = sq1 - sq2;
+    let movediff = sq3 - sq2;
+    if (Math.abs(diff) != 1 || sq1 % 8 != sq3 % 8) return false;
 
+    if (passant.className[4] == 'w') {
+        if (diff > 0) value = -7;
+        else value = -9;
+    }
+    else {
+        if (diff > 0) value = 9;
+        else value = 7;
+    }
+    if (movediff == value) return true;
+    return false;
 
+}
