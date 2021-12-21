@@ -1,5 +1,5 @@
 var selector = "";
-const squares = document.querySelectorAll('p');
+const squares = document.querySelectorAll('p:not(.win)');
 const notice = document.querySelector('.notice');
 const warn = document.querySelector('#check');
 var counter = 0;
@@ -225,6 +225,9 @@ function isvalid_pawn(e, s) {
     }
 
     if (s == "capture") {
+        if (materun == 1) {
+            if (!e.children.length) return false;
+        }
         if (division2 - division1 == value) {
             if (z == 7 * value) {
                 if (materun == 0 && checkrun == 1) {
@@ -357,6 +360,11 @@ function pawn_moves(e) {
     if (e.className == 'iconw') mult = 1;
     else mult = -1;
 
+    if (division == 102 || division == 107) {
+        values.push(8 * mult);
+        values.push(16 * mult);
+    }
+    else values.push(8 * mult);
     values.push(7 * mult);
     values.push(9 * mult);
 
@@ -366,6 +374,10 @@ function pawn_moves(e) {
             if ((value % 7 == 0 || value % 9 == 0) && (document.getElementById(z).parentNode.id == division + mult))
             {
                 if (e.className == 'iconw') move_white.push(z);
+                else move_black.push(z);
+            }
+            else if (value % 8 == 0) {
+                if (j.className == 'iconw') move_white.push(z);
                 else move_black.push(z);
             }
 
@@ -627,8 +639,10 @@ function ischeck(time, sq, arr) {
                 //console.log(values[0]);
                 selector = values[0];
                 
+                let s = "capture";
+                if (!document.getElementById(king_sq).children.length && values[0][0] == 'p') s = 'move';
                 
-                if (isvalid(document.getElementById(king_sq), "capture")) {
+                if (isvalid(document.getElementById(king_sq), s)) {
                     console.log("check")
                     selector = '';
                     if (time == 'after') {
@@ -652,6 +666,7 @@ function ischeck(time, sq, arr) {
     checkrun = 0;
     before = 0;
     if (attackers.length > 0 && time != "none" && materun == 0) return true;
+    console.log(king_sq);
     return false;
 }
 function undo() {
@@ -809,6 +824,7 @@ function iscastle(e) {
 }
 function en_passant(e) {
     let value;
+    if (!passant.parentNode) return false;
     let div1 = parseInt(passant.parentNode.parentNode.id);
     let div2 = parseInt(document.getElementById(selector).parentNode.parentNode.id);
     let div3 = parseInt(e.parentNode.id);
@@ -834,4 +850,8 @@ function en_passant(e) {
     if (movediff == value) return true;
     return false;
 
+}
+function back() {
+    document.getElementById('board').style.filter = 'none';
+    document.getElementsByClassName('mate')[0].style.display = "none";
 }
